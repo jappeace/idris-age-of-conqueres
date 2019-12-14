@@ -2,3 +2,5 @@
 *.ibc
 a.out
 test.out
+*.o
+hello_world

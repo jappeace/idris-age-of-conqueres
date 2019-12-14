@@ -1,0 +1,16 @@
+package hello_world
+
+version    = 0.0.1
+brief      = "Initial project template from idringen"
+
+author     = Jappie Klooster <jappieklooster@hotmail.com>
+license    = BSD3
+homepage   = https://github.com/githubuser/hello_world
+sourceloc  = git@github.com:githubuser/hello_world.git
+bugtracker = https://github.com/githubuser/hello_world/issues
+
+sourcedir  = src
+modules    = Test
+tests      = Test.spec
+executable = hello_world
+main       = Main

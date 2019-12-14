@@ -1,0 +1,2 @@
+build:
+	idrin build
