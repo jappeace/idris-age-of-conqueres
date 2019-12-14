@@ -1,0 +1,10 @@
+VPATH = ../cbits
+CC = gcc
+CFLAGS = `idris --include` # -L /usr/lib/x86_64-linux-gnu/X11 -lX11
+IdrXlib.o:
+	gcc $(CFLAGS) -I../cbits -c ../cbits/Lib.c -o Lib.o
+
+clean: .PHONY
+	find . -nowarn -name *.ibc -delete
+
+.PHONY:

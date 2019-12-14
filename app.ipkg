@@ -1,0 +1,10 @@
+package app
+
+sourcedir = src
+makefile = MakefileLibC
+
+objs = Lib.o
+
+modules = Lib
+	, Foreign.Marshal.Alloc
+	, Control.Monad.Loop
