@@ -14,3 +14,5 @@ modules    = Test
 tests      = Test.spec
 executable = hello_world
 main       = Main
+
+opts = "-p effects -p sdl2"
