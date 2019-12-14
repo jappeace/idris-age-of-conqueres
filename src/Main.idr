@@ -7,13 +7,15 @@ import Effects
 record Body where
    constructor MkBody
    body_x, body_y : Int
+   body_vel_x, body_vely_y : Double
 
 implementation Show Body where
-   show (MkBody x y) = "(MkBody " <+> show x <+> "," <+> show y  <+> ")"
+   show body =
+    "(MkBody " <+> show (body_x body) <+> "," <+> show (body_y body)  <+> ")"
 
 body : Renderer -> Body -> IO ()
-body renderer (MkBody x y) = 
-  filledEllipse renderer x y 10 10 255 0 0 255
+body renderer body = 
+  filledEllipse renderer (body_x body) (body_y body) 10 10 255 0 0 255
 
 nbody_count : Int
 nbody_count = 30
@@ -29,8 +31,36 @@ draw renderer bodys =  do
    filledRect renderer 0 0 900 900 255 255 254 254
    traverse_ (body renderer) bodys 
 
+centerFunc : (Int, (Double, Double)) -> Body -> (Int, (Double, Double))
+centerFunc (0, _) body = (1, cast $ body_x body, cast $ body_y body)
+centerFunc (ix, (prev_x, prev_y)) body =
+    (1,
+    prev_x * prevFrac + fraction * (cast $ body_x body),
+    prev_y * prevFrac + fraction * (cast $ body_y body))
+           where
+              fraction = 1 / cast ix
+              prevFrac = 1 - fraction
+   
+findMassCenter : List Body -> (Double, Double)
+findMassCenter x = snd $ foldl centerFunc (0, 0, 0) x 
+
+change : Double
+change = 0.9
+
 update : List Body -> List Body
-update = id 
+update bodies = 
+  let center = findMassCenter bodies
+  in map (\body => body
+        -- let  xchange = fst center - body_x body in
+        -- (record { body_vel_x =
+          --          (if xchange /= 0 then 1 / xchange else 0) *
+           --         (1- change) +
+            --        (body_vel_x body) * change 
+             --   } body)
+             )
+             bodies
+                
+
 
 windowLoop : Renderer -> List Body -> IO ()
 windowLoop renderer bodys = do 
@@ -55,7 +85,7 @@ randomNumbers depth x max = do
 makeBodys : List Integer -> List Integer -> List Body
 makeBodys rngIntWidth rngInthHeights = do
     (width, height) <- zip rngIntWidth rngInthHeights
-    pure $ MkBody (fromInteger width) (fromInteger height)
+    pure $ MkBody (fromInteger width) (fromInteger height) 0 0
 
 main : IO ()
 main = do
