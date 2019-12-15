@@ -1,7 +1,13 @@
-# Idris
+[![Jappiejappie](https://img.shields.io/badge/twitch.tv-jappiejappie-purple?logo=twitch)](https://www.twitch.tv/jappiejappie)
 
-An exploration of idris, doing the N-body problem with a GUI.
+This is an initial idris exploration project on stream.
+We do the N-body problem with a GUI.
 
-## Using sdl bindings
+The name is a tribute the Age of Empires, the age of conquerers.
+
+# Using sdl bindings
 
 https://github.com/steshaw/idris-sdl2
+
+# License
+MIT
