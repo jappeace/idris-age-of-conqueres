@@ -7,13 +7,15 @@ import Effects
 record Body where
    constructor MkBody
    body_x, body_y : Int
-   body_vel_x, body_vel_y : Double
+   body_vel_x, body_vel_y, body_remainder_x, body_remainder_y : Double
 
 implementation Show Body where
         show body = "(MkBody " <+> show (body_x body)
                     <+> "," <+> show (body_y body)
                     <+> "," <+> show (body_vel_x body)
                     <+> "," <+> show (body_vel_y body) 
+                    <+> "," <+> show (body_remainder_x body)
+                    <+> "," <+> show (body_remainder_y body) 
                     <+> ")"
 
 body : Renderer -> Body -> IO ()
@@ -50,24 +52,38 @@ findMassCenter = snd . foldl centerFunc (0, 0, 0)
 change : Double
 change = 0.9
   
-updateWithVel : Double -> Int -> Int
-updateWithVel x y = cast x + y
+updateWithVel : Double -> Double -> Int -> Int
+updateWithVel x y d = (cast x) + (cast y) + d
+  
+stripDecimals : Double -> Int
+stripDecimals = cast
 
 recordUpdate : (Double, Double) -> Body -> Body 
 recordUpdate center body =
-    let  xchange = ((fst center) - (cast $ body_x body)) / 100
-         ychange = ((fst center) - (cast $ body_y body)) / 100
+    let  xchange = ((fst center) - (cast $ body_x body)) 
+         ychange = ((fst center) - (cast $ body_y body)) 
+
          new_x_vel : Double = (((if xchange /= 0.0 then 1.0 / xchange else 0.0) *
                    (1- change) +
                     (body_vel_x body) * change))
          new_y_vel = ((if ychange /= 0 then 1.0 / ychange else 0) *
                    (1- change) +
                     (body_vel_y body) * change)
+
+         new_body_remainder_x = (new_x_vel - (cast $ stripDecimals new_x_vel)) + body_remainder_x body
+         new_body_remainder_y = (new_y_vel - (cast $ stripDecimals new_y_vel)) + body_remainder_x body
+         new_body_remainder_x' = if abs new_body_remainder_x > 1 then 0.0 else  new_body_remainder_x
+         new_body_remainder_y' = if abs new_body_remainder_y > 1 then 0.0 else  new_body_remainder_y
+
     in
         (record { body_vel_x = new_x_vel,
                   body_vel_y = new_y_vel,
-                  body_x $= updateWithVel (body_vel_x body),
-                  body_y $= updateWithVel (body_vel_y body)
+                  body_remainder_x = new_body_remainder_x',
+                  body_remainder_y = new_body_remainder_y',
+
+                  body_x $= updateWithVel (body_vel_x body) new_body_remainder_x,
+                  body_y $= updateWithVel (body_vel_y body) new_body_remainder_y
+
                } body)
 
 update : List Body -> List Body
@@ -101,7 +117,7 @@ randomNumbers depth x max = do
 makeBodys : List Integer -> List Integer -> List Body
 makeBodys rngIntWidth rngInthHeights = do
     (width, height) <- zip rngIntWidth rngInthHeights
-    pure $ MkBody (fromInteger width) (fromInteger height) 0 0
+    pure $ MkBody (fromInteger width) (fromInteger height) 0 0 0 0
 
 main : IO ()
 main = do
