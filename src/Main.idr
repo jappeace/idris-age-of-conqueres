@@ -7,14 +7,17 @@ import Effects
 record Body where
    constructor MkBody
    body_x, body_y : Int
-   body_vel_x, body_vely_y : Double
+   body_vel_x, body_vel_y : Double
 
 implementation Show Body where
-   show body =
-    "(MkBody " <+> show (body_x body) <+> "," <+> show (body_y body)  <+> ")"
+        show body = "(MkBody " <+> show (body_x body)
+                    <+> "," <+> show (body_y body)
+                    <+> "," <+> show (body_vel_x body)
+                    <+> "," <+> show (body_vel_y body) 
+                    <+> ")"
 
 body : Renderer -> Body -> IO ()
-body renderer body = 
+body renderer body =  do
   filledEllipse renderer (body_x body) (body_y body) 10 10 255 0 0 255
 
 nbody_count : Int
@@ -42,32 +45,45 @@ centerFunc (ix, (prev_x, prev_y)) body =
               prevFrac = 1 - fraction
    
 findMassCenter : List Body -> (Double, Double)
-findMassCenter x = snd $ foldl centerFunc (0, 0, 0) x 
+findMassCenter = snd . foldl centerFunc (0, 0, 0)
 
 change : Double
 change = 0.9
+  
+updateWithVel : Double -> Int -> Int
+updateWithVel x y = cast x + y
+
+recordUpdate : (Double, Double) -> Body -> Body 
+recordUpdate center body =
+    let  xchange = ((fst center) - (cast $ body_x body)) / 100
+         ychange = ((fst center) - (cast $ body_y body)) / 100
+         new_x_vel : Double = (((if xchange /= 0.0 then 1.0 / xchange else 0.0) *
+                   (1- change) +
+                    (body_vel_x body) * change))
+         new_y_vel = ((if ychange /= 0 then 1.0 / ychange else 0) *
+                   (1- change) +
+                    (body_vel_y body) * change)
+    in
+        (record { body_vel_x = new_x_vel,
+                  body_vel_y = new_y_vel,
+                  body_x $= updateWithVel (body_vel_x body),
+                  body_y $= updateWithVel (body_vel_y body)
+               } body)
 
 update : List Body -> List Body
 update bodies = 
   let center = findMassCenter bodies
-  in map (\body => body
-        -- let  xchange = fst center - body_x body in
-        -- (record { body_vel_x =
-          --          (if xchange /= 0 then 1 / xchange else 0) *
-           --         (1- change) +
-            --        (body_vel_x body) * change 
-             --   } body)
-             )
-             bodies
+  in map (recordUpdate center) bodies
                 
-
-
 windowLoop : Renderer -> List Body -> IO ()
 windowLoop renderer bodys = do 
    renderClear renderer 
    draw renderer bodys 
    renderPresent renderer 
    isQuit <- pollEventsForQuit
+   case bodys of
+        (x :: _)  => putStrLn $ show x
+        [] => pure ()
    if isQuit then
            putStrLn "hello hello_world!"
            else windowLoop renderer $ update bodys
