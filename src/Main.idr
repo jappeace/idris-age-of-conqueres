@@ -3,11 +3,16 @@ module Main
 import Graphics.SDL2
 import Effect.Random
 import Effects
+import Data.Vec
 
 record Body where
    constructor MkBody
    body_x, body_y : Int
    body_vel_x, body_vel_y, body_remainder_x, body_remainder_y : Double
+
+-- TODO make vectors in Body
+somePos : Vec 2 Int
+somePos = Vec 0 0
 
 implementation Show Body where
         show body = "(MkBody " <+> show (body_x body)
