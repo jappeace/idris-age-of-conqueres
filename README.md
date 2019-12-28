@@ -18,3 +18,7 @@ https://github.com/steshaw/idris-sdl2
 
 # License
 MIT
+
+
+# Epic logo
+https://en.wikipedia.org/wiki/Idris_(prophet)
