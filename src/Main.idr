@@ -3,7 +3,7 @@ module Main
 import Graphics.SDL2
 import Effect.Random
 import Effects
-import Data.Vec
+import Data.Vect
 
 record Body where
    constructor MkBody
@@ -11,8 +11,8 @@ record Body where
    body_vel_x, body_vel_y, body_remainder_x, body_remainder_y : Double
 
 -- TODO make vectors in Body
-somePos : Vec 2 Int
-somePos = Vec 0 0
+somePos : Vect 2 Int
+somePos = [0,0]
 
 implementation Show Body where
         show body = "(MkBody " <+> show (body_x body)
@@ -85,10 +85,8 @@ recordUpdate center body =
                   body_vel_y = new_y_vel,
                   body_remainder_x = new_body_remainder_x',
                   body_remainder_y = new_body_remainder_y',
-
                   body_x $= updateWithVel (body_vel_x body) new_body_remainder_x,
                   body_y $= updateWithVel (body_vel_y body) new_body_remainder_y
-
                } body)
 
 update : List Body -> List Body
