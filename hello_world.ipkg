@@ -15,4 +15,7 @@ tests      = Test.spec
 executable = hello_world
 main       = Main
 
-opts = "-p effects -p sdl2"
+pkgs = effects, sdl2
+
+objs = sdl2.o
+     , sdl2.h
