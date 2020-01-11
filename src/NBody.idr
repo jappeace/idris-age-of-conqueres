@@ -18,7 +18,7 @@ record Body where
 -- TODO make vectors in Body
 somePos : Vect 4 Int
 somePos = [0,0, 0, 0]
-
+  
 implementation Show Body where
         show body = "(MkBody " <+> show (body_x body)
                     <+> "," <+> show (body_y body)
@@ -122,9 +122,17 @@ makeBodys rngIntWidth rngInthHeights = do
     (width, height) <- zip rngIntWidth rngInthHeights
     pure $ MkBody (fromInteger width) (fromInteger height) 0 0 0 0
 
-nbodyFUnc : IO ()
-nbodyFUnc = do
-    rngIntWidth <- randomNumbers nbody_count 21 window_width
-    rngInthHeights <- randomNumbers nbody_count 22 window_height
+askInt : String -> IO (Maybe Integer)
+askInt msg = do
+  putStrLn msg
+  resp <- getLine
+  pure $ parseInteger resp
+    -- the readInt function is left as an exercise
+
+nbodyFunc : IO ()
+nbodyFunc = do
+    seed <- fromMaybe 22 <$> askInt "Seed plz"
+    rngIntWidth <- randomNumbers nbody_count seed window_width
+    rngInthHeights <- randomNumbers nbody_count (seed * 5) window_height
     initialRender <- init window_width window_height
     windowLoop initialRender 0 (makeBodys rngIntWidth rngInthHeights) 
